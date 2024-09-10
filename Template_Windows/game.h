@@ -3,7 +3,6 @@
 #include "stdafx.h"
 #include "maploader.h"
 #include "camera.h"
-#include "pathfinder.h"
 
 namespace game
 {
@@ -16,10 +15,6 @@ namespace game
 
 	static wi::PathQuery path;
 	static int wpIndex = 0;
-
-	static wi::graphics::Texture tex;
-	static uint8_t texData[400 * 300 * 4];
-
 
 	class GameRenderPath : public wi::RenderPath3D
 	{

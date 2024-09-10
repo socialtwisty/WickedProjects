@@ -18,6 +18,9 @@ bld/
 [Bb]in/
 [Oo]bj/
 
+# Blender
+*.blend1
+
 # Roslyn cache directories
 *.ide/
 

@@ -28,6 +28,12 @@
     <ClInclude Include="camera.h">
       <Filter>Code</Filter>
     </ClInclude>
+    <ClInclude Include="game.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="maploader.h">
+      <Filter>Code</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -40,6 +46,9 @@
       <Filter>Code</Filter>
     </ClCompile>
     <ClCompile Include="game.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="maploader.cpp">
       <Filter>Code</Filter>
     </ClCompile>
   </ItemGroup>
