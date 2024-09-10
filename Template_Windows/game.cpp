@@ -7,9 +7,15 @@ namespace game
 {
 	GameApplication* GameApplication::AppRef = nullptr;
 
+	Entity GameApplication::entPlaySurface = INVALID_ENTITY;
+	Entity GameApplication::entPinBall = INVALID_ENTITY;
+	Vector3 GameApplication::locBallStart = Vector3(0.0f, 0.0f, 0.0f);
+
 	void GameRenderPath::Load()
 	{
 		RenderPath3D::Load();
+
+		//wi::physics::SetDebugDrawEnabled(true);
 
 		MapMeta mapmeta;
 		MapLoader::Load("assets/env.wiscene", mapmeta);
@@ -17,14 +23,48 @@ namespace game
 			Camera::SetEntity(mapmeta.entCamera);
 		}
 
-		// modify loader so each object is rigid body
-		LoadModel("assets/static-walls.wiscene");
+		// Load in the static walls
+		Scene src;
+		LoadModel(src, "assets/static-walls.wiscene");
+
+		// Supply a collision shape for each object
+		std::vector<Entity> objects = src.objects.GetEntityArray();
+		for (Entity e : objects) {
+			RigidBodyPhysicsComponent& body = src.rigidbodies.Create(e);
+
+			// todo: append object name hints like "_coltri" or "_colconvex" as needed
+			body.shape = RigidBodyPhysicsComponent::CollisionShape::TRIANGLE_MESH;
+			body.SetKinematic(true);
+		}
+		GetScene().Merge(src);
+
+		// Store the entity representing the playfield
+		GameApplication::entPlaySurface = GetScene().Entity_FindByName("static-walls.glb");
+
+		// Lets rotate the play surface
+		TransformComponent* transPlayField = GetScene().transforms.GetComponent(GameApplication::entPlaySurface);
+		transPlayField->RotateRollPitchYaw(Vector3(-0.4f, 0.0f, 0.0f));
 
 	}
 
 	void GameRenderPath::Update(float deltaTime)
 	{
 		Camera::Update(deltaTime);
+
+		if (tick == 1) {
+			// Load the pinball and place it at its start location
+			LoadModel("assets/pinball.wiscene");
+			GameApplication::entPinBall = GetScene().Entity_FindByName("PinBall");
+
+			// Determine ball start location
+			Entity entBallStart = GetScene().Entity_FindByName("ballstart");
+			TransformComponent* transBallStart = GetScene().transforms.GetComponent(entBallStart);
+			GameApplication::locBallStart = transBallStart->GetPosition();
+
+			TransformComponent* transBall = GetScene().transforms.GetComponent(GameApplication::entPinBall);
+			transBall->translation_local = GameApplication::locBallStart;
+			transBall->UpdateTransform();
+		}
 
 		++tick;
 		RenderPath3D::Update(deltaTime);

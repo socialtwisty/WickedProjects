@@ -49,3 +49,6 @@ bool MapLoader::LoadAndFind(Entity& ent, std::string entName, std::string sceneP
 	}
 	return false;
 }
+
+void MapLoader::RigidBodyLoad(std::string scenePath) {
+}

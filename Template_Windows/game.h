@@ -30,9 +30,11 @@ namespace game
 
 	public:
 		static GameApplication* AppRef;
-		GameRenderPath renderPath; // temporary public
+		GameRenderPath renderPath;
 
-		GameRenderPath renderPath2;
+		static Entity entPlaySurface;
+		static Entity entPinBall;
+		static Vector3 locBallStart;
 
 		void Initialize() override;
 		void Compose(wi::graphics::CommandList cmd) override;
