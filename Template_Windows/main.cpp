@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "main.h"
+#include "game.h"
 
 #define MAX_LOADSTRING 100
 
@@ -10,7 +11,7 @@
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
-wi::Application application;					// Wicked Engine Application
+game::GameApplication application;				// Wicked Engine Application
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);

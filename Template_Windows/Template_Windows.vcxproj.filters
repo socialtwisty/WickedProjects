@@ -25,12 +25,21 @@
     <ClInclude Include="main.h">
       <Filter>Code</Filter>
     </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>Code</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>Code</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="camera.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="game.cpp">
       <Filter>Code</Filter>
     </ClCompile>
   </ItemGroup>
