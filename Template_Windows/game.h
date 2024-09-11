@@ -16,6 +16,9 @@ namespace game
 	static wi::PathQuery path;
 	static int wpIndex = 0;
 
+	static Entity flipperUpperLeft, flipperLowerLeft;
+	static Entity flipperUpperRight, flipperLowerRight;
+
 	class GameRenderPath : public wi::RenderPath3D
 	{
 	public:
@@ -29,6 +32,12 @@ namespace game
 	{
 
 	public:
+		static float trigL;
+		static float trigR;
+
+		static Quaternion flipperLeft;
+		static Quaternion flipperRight;
+
 		static GameApplication* AppRef;
 		GameRenderPath renderPath;
 
