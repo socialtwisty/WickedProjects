@@ -19,6 +19,11 @@ namespace game
 	static Entity flipperUpperLeft, flipperLowerLeft;
 	static Entity flipperUpperRight, flipperLowerRight;
 
+	static Entity entBumper1, entBumper1_light;
+	static Entity entBumper2, entBumper2_light;
+	static Entity entBumper3, entBumper3_light;
+	static Entity entBumper4, entBumper4_light;
+
 	class GameRenderPath : public wi::RenderPath3D
 	{
 	public:

@@ -16,11 +16,14 @@ namespace game
 	Quaternion GameApplication::flipperLeft = Quaternion(0, 0, 0, 0);
 	Quaternion GameApplication::flipperRight = Quaternion(0, 0, 0, 0);
 
+	bool moveBall = false;
+
 	void GameRenderPath::Load()
 	{
 		RenderPath3D::Load();
 
 		//wi::physics::SetDebugDrawEnabled(true);
+		this->setBloomEnabled(false);
 
 		MapMeta mapmeta;
 		MapLoader::Load("assets/env.wiscene", mapmeta);
@@ -79,16 +82,40 @@ namespace game
 		p = GetScene().hierarchy.GetComponent(game::flipperLowerRight);
 		p->parentID = GameApplication::entPlaySurface;
 
+		// Now the bell bumpers
+		LoadModel("assets/bell-bumpers.wiscene");
+		game::entBumper1 = GetScene().Entity_FindByName("bumper1");
+		game::entBumper2 = GetScene().Entity_FindByName("bumper2");
+		game::entBumper3 = GetScene().Entity_FindByName("bumper3");
+		game::entBumper4 = GetScene().Entity_FindByName("bumper4");
+		game::entBumper1_light = GetScene().Entity_FindByName("bumper1_light");
+		game::entBumper2_light = GetScene().Entity_FindByName("bumper2_light");
+		game::entBumper3_light = GetScene().Entity_FindByName("bumper3_light");
+		game::entBumper4_light = GetScene().Entity_FindByName("bumper4_light");
+		// bumpers
+		(GetScene().hierarchy.GetComponent(game::entBumper1))->parentID = GameApplication::entPlaySurface;
+		(GetScene().hierarchy.GetComponent(game::entBumper2))->parentID = GameApplication::entPlaySurface;
+		(GetScene().hierarchy.GetComponent(game::entBumper3))->parentID = GameApplication::entPlaySurface;
+		(GetScene().hierarchy.GetComponent(game::entBumper4))->parentID = GameApplication::entPlaySurface;
+
 		// Lets rotate the play surface
 		TransformComponent* transPlayField = GetScene().transforms.GetComponent(GameApplication::entPlaySurface);
-		transPlayField->RotateRollPitchYaw(Vector3(-0.3f, 0.0f, 0.0f));
-
+		transPlayField->RotateRollPitchYaw(Vector3(-0.35f, 0.0f, 0.0f));
 		
 	}
 
 	void GameRenderPath::Update(float deltaTime)
 	{
 		Camera::Update(deltaTime);
+
+		if (moveBall) {
+			game::moveBall = false;
+			RigidBodyPhysicsComponent* rigidBall = GetScene().rigidbodies.GetComponent(GameApplication::entPinBall);
+			rigidBall->SetKinematic(false);
+			TransformComponent* transBall = GetScene().transforms.GetComponent(GameApplication::entPinBall);
+			transBall->translation_local = GameApplication::locBallStart;
+			transBall->UpdateTransform();
+		}
 
 		if (tick == 1) {
 			// Load the pinball and place it at its start location
@@ -132,17 +159,41 @@ namespace game
 			t_lr->UpdateTransform();
 			t_ur->UpdateTransform();
 
-			if (wi::input::Press(wi::input::KEYBOARD_BUTTON_SPACE)) {
-				TransformComponent* transBall = GetScene().transforms.GetComponent(GameApplication::entPinBall);
-				transBall->translation_local = GameApplication::locBallStart;
-				transBall->UpdateTransform();
+			TransformComponent* transPinball = GetScene().transforms.GetComponent(GameApplication::entPinBall);
+			TransformComponent* transBumper1 = GetScene().transforms.GetComponent(entBumper1);
+			TransformComponent* transBumper2 = GetScene().transforms.GetComponent(entBumper2);
+			TransformComponent* transBumper3 = GetScene().transforms.GetComponent(entBumper3);
+			TransformComponent* transBumper4 = GetScene().transforms.GetComponent(entBumper4);
 
+			// Check if the ball is in contact with a bumper
+			wi::primitive::Sphere colPinball, colBumper1, colBumper2, colBumper3, colBumper4;
+			
+			colPinball.center = transPinball->GetPosition(); colPinball.radius = 0.2f;
+			colBumper1.center = transBumper1->GetPosition(); colBumper1.radius = 0.35f;
+			colBumper2.center = transBumper2->GetPosition(); colBumper2.radius = 0.35f;
+			colBumper3.center = transBumper3->GetPosition(); colBumper3.radius = 0.35f;
+			colBumper4.center = transBumper4->GetPosition(); colBumper4.radius = 0.35f;
 
-				GetScene().Clear();
-				GameRenderPath::Load();
-				tick = 0;
-			}
+			LightComponent* lightBumper1 = GetScene().lights.GetComponent(entBumper1_light);
+			LightComponent* lightBumper2 = GetScene().lights.GetComponent(entBumper2_light);
+			LightComponent* lightBumper3 = GetScene().lights.GetComponent(entBumper3_light);
+			LightComponent* lightBumper4 = GetScene().lights.GetComponent(entBumper4_light);
+			if (colPinball.intersects(colBumper1)) { lightBumper1->intensity = 8; } else { lightBumper1->intensity = 0; }
+			if (colPinball.intersects(colBumper2)) { lightBumper2->intensity = 8; }	else { lightBumper2->intensity = 0; }
+			if (colPinball.intersects(colBumper3)) { lightBumper3->intensity = 8; }	else { lightBumper3->intensity = 0; }
+			if (colPinball.intersects(colBumper4)) { lightBumper4->intensity = 8; } else { lightBumper4->intensity = 0; }
+		}
 
+		if (wi::input::Press(wi::input::KEYBOARD_BUTTON_SPACE)) {
+			RigidBodyPhysicsComponent* rigidBall = GetScene().rigidbodies.GetComponent(GameApplication::entPinBall);
+			rigidBall->SetKinematic(true);
+			game::moveBall = true;
+
+			/*GetScene().Clear();
+			GameRenderPath::Load();
+			tick = 0;
+			return;
+			*/
 		}
 
 		++tick;
